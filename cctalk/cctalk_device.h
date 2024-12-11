@@ -134,11 +134,6 @@ class CctalkDevice : public QObject {
 
 	protected:
 
-		/// Start event-handling timer
-        //void startTimer();
-
-		/// Stop event-handling timer
-        //void stopTimer();
 
 	signals:
 
