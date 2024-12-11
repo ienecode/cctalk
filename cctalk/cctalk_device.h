@@ -280,7 +280,7 @@ class CctalkDevice : public QObject {
 
         QTimer event_timer_;  ///< Polling timer
 
-        void testTimer();
+
 
 		bool timer_iteration_task_running_ = false;  ///< Avoids parallel executions of state change, since it's asynchronous
 
