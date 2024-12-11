@@ -9,8 +9,6 @@
 #include "cctalk/coin_acceptor_device.h"
 
 
-
-
 class MyCcTalkApp: public QObject
 {
     Q_OBJECT
@@ -22,10 +20,8 @@ public slots:
     /// Launch device-handling threads
     void runSerialThreads();
 
-
     /// Log message to message log
     void logMessage(QString msg);
-
 
     /// Button click callback
     void onStartStopCoinAcceptor();
@@ -38,7 +34,7 @@ public slots:
 private:
 
 
-    qtcc::CoinAcceptorDevice coin_acceptor_;  ///< Coin acceptor communicator (launches separate thread)
+    qtcc::CoinAcceptorDevice coin_acceptor_;  ///< Coin acceptor communicator 
 
     QTimer timerRefresh;
 };
