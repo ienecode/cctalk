@@ -98,12 +98,6 @@ void CctalkDevice::startTimer()
 
 
 }
-void CctalkDevice::testTimer()
-{
-    qDebug() << "test test test";
-
-}
-
 
 void CctalkDevice::stopTimer()
 {
@@ -273,9 +267,9 @@ bool CctalkDevice::requestSwitchDeviceState(CcDeviceState state, const std::func
 
 
 			bool success = switchStateInitialized(finish_callback);
-            event_timer_.setInterval(normal_polling_interval_msec_);
-            //startTimer();
-            testTimer();
+                        event_timer_.setInterval(normal_polling_interval_msec_);
+                        startTimer();
+        
 			return success;
 		}
 
