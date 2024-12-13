@@ -15,15 +15,19 @@
 
 
 
-/// Set up cctalk devices 
-/// This reads the config file to get the device settings.
+/// Set up cctalk devices - coin acceptor and bill validator. This
+/// reads the config file to get the device settings.
 /// \return Error string or empty string if no error.
-inline QString setUpCctalkDevices(qtcc::CoinAcceptorDevice* coin_acceptor,
+inline QString setUpCctalkDevices(CoinAcceptorDevice* coin_acceptor,
         const std::function<void(QString message)>& message_logger)
 {
+    // Note: If using multiple devices, all ccTalk options must be the same if the
+    // device name is the same; except for cctalk_address, which must be
+    // non-zero and must be different.
+
     auto coin_device = AppSettings::getValue<QString>(QStringLiteral("coin_acceptor/serial_device_name"));
     auto coin_cctalk_address = AppSettings::getValue<quint8>(QStringLiteral("coin_acceptor/cctalk_address"),
-            ccCategoryGetDefaultAddress(qtcc::CcCategory::CoinAcceptor));
+            ccCategoryGetDefaultAddress(CcCategory::CoinAcceptor));
     bool coin_des_encrypted = AppSettings::getValue<bool>(QStringLiteral("coin_acceptor/cctalk_des_encrypted"), false);
     bool coin_checksum_16bit = AppSettings::getValue<bool>(QStringLiteral("coin_acceptor/cctalk_checksum_16bit"), false);
 
@@ -46,7 +50,7 @@ inline QString setUpCctalkDevices(qtcc::CoinAcceptorDevice* coin_acceptor,
         coin_acceptor->getLinkController().setLoggingOptions(show_full_response, show_serial_request, show_serial_response,
                 show_cctalk_request, show_cctalk_response);
 
-        QObject::connect(coin_acceptor, &qtcc::CctalkDevice::logMessage, message_logger);
+        QObject::connect(coin_acceptor, &CctalkDevice::logMessage, message_logger);
     }
 
     return QString();
