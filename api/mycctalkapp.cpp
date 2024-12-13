@@ -10,15 +10,13 @@
 #include "cctalkTools.h"
 
 
-using qtcc::CcDeviceState;
+//using CcDeviceState;
 
 MyCcTalkApp::MyCcTalkApp(QObject *parent)
     : QObject{parent}
 {
     // Load application settings
     AppSettings::init();
-
-    qDebug() << "ThreadID MyCcTalkApp:  " << QThread::currentThreadId();
 
     QTimer::singleShot(0, this, SLOT(runSerialThreads()));
 
@@ -37,21 +35,17 @@ void MyCcTalkApp::runSerialThreads()
         logMessage(setup_error);
         return;
     }
-
     // Coin acceptor
-    /*
     {
-        connect(&coin_acceptor_, &qtcc::CctalkDevice::creditAccepted, [this]([[maybe_unused]] quint8 id, const qtcc::CcIdentifier& identifier) {
+        connect(&coin_acceptor_, &CctalkDevice::creditAccepted, [this]([[maybe_unused]] quint8 id, const CcIdentifier& identifier) {
             const char* prop_name = "integral_value";
-
-
             quint64 divisor = 1;
             quint64 value = identifier.getValue(divisor);
 
             qDebug() << "CreditAccepted: " << value;
 
         });
-    }*/
+    }
 
 
 }
