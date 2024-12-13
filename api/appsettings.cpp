@@ -21,14 +21,11 @@ bool AppSettings::init()
     // Load the system settings from the current directory
     QSettings::setPath(QSettings::IniFormat, QSettings::SystemScope, QStringLiteral("."));
 
-
-
     if (s_app_settings) {
         debug_out_warn(DBG_FUNC_MSG << "Settings already loaded.");
         qDebug() << "Setting already loades";
         return false;  // already loaded
     }
-
 
     // This searches in "." first (for system-wide settings). Then in user-specific directory.
     // The write happens to user-specific file.
@@ -36,9 +33,6 @@ bool AppSettings::init()
              QCoreApplication::applicationName());
 
     debug_out_info("Using \"" << s_app_settings->fileName() << "\" as a user-specific settings file");
-
-    qDebug() << "Using " << s_app_settings->fileName() << " as a user-specific settings file";
-
     return true;
 }
 
