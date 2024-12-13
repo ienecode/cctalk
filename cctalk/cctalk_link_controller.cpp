@@ -4,22 +4,15 @@ License: BSD-3-Clause
 ***************************************************************************/
 
 #include <memory>
-
 #include "cctalk_link_controller.h"
 #include "helpers/debug.h"
 #include "serial_worker.h"
 
-
-namespace qtcc {
-
-
-
-
 CctalkLinkController::CctalkLinkController()
 {
-	serial_worker_.reset(new SerialWorker());
+    serial_worker_.reset(new SerialWorker());
 
-	serial_worker_->moveToThread(&worker_thread_);
+    serial_worker_->moveToThread(&worker_thread_);
 	connect(&worker_thread_, &QThread::finished, serial_worker_.data(), &QObject::deleteLater);
 
 	// Connect our proxy signals to their slots.
@@ -70,12 +63,7 @@ CctalkLinkController::CctalkLinkController()
 	// Start the thread (calls run(), enters event loop).
 	worker_thread_.start();
 
-
-    qDebug() << "ThreadID CctalkLinkController:  " << QThread::currentThreadId();
-
 }
-
-
 
 CctalkLinkController::~CctalkLinkController()
 {
@@ -294,5 +282,4 @@ void CctalkLinkController::onResponseReceive(quint64 request_id, const QByteArra
 
 
 
-}
 
