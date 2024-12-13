@@ -1,11 +1,8 @@
 #ifndef MYCCTALKAPP_H
 #define MYCCTALKAPP_H
-
-
 #include <QCloseEvent>
 #include <QScopedPointer>
 #include <QDebug>
-
 #include "cctalk/coin_acceptor_device.h"
 
 
@@ -33,10 +30,8 @@ public slots:
 
 private:
 
+    CoinAcceptorDevice coin_acceptor_;  ///< Coin acceptor communicator
 
-    qtcc::CoinAcceptorDevice coin_acceptor_;  ///< Coin acceptor communicator 
-
-    QTimer timerRefresh;
 };
 
 
