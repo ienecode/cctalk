@@ -18,7 +18,7 @@ License: BSD-3-Clause
 
 
 
-namespace qtcc {
+
 
 
 
@@ -108,7 +108,7 @@ class CctalkDevice : public QObject {
 	Q_OBJECT
 	public:
 
-		using BillValidatorFunc = std::function<bool(quint8 bill_id, const CcIdentifier& identifier)>;
+        //using BillValidatorFunc = std::function<bool(quint8 bill_id, const CcIdentifier& identifier)>;
 
 		/// Constructor
 		CctalkDevice();
@@ -119,7 +119,7 @@ class CctalkDevice : public QObject {
 		/// This function is called in NormalAccepting state when a bill is inserted and
 		/// should be checked for validity by us.
 		/// If the function returns true, the bill is accepted.
-		void setBillValidationFunction(BillValidatorFunc validator);
+        //void setBillValidationFunction(BillValidatorFunc validator);
 
 		/// Request initializing the device from ShutDown state.
 		/// Starts event timer.
@@ -134,6 +134,11 @@ class CctalkDevice : public QObject {
 
 	protected:
 
+		/// Start event-handling timer
+        //void startTimer();
+
+		/// Stop event-handling timer
+        //void stopTimer();
 
 	signals:
 
@@ -280,13 +285,11 @@ class CctalkDevice : public QObject {
 
         QTimer event_timer_;  ///< Polling timer
 
-
-
 		bool timer_iteration_task_running_ = false;  ///< Avoids parallel executions of state change, since it's asynchronous
 
 		CcDeviceState device_state_ = CcDeviceState::ShutDown;  ///< Current status
 
-		BillValidatorFunc bill_validator_func_;  ///< Bill validator function, which tells us to accept or reject a certain bill.
+        //BillValidatorFunc bill_validator_func_;  ///< Bill validator function, which tells us to accept or reject a certain bill.
 
 // 		QTimer reset_timer_;  ///< Timer that waits for the device to get back up after SoftReset
 // 		QTime last_reset_time_;  ///< Last time the device was SoftReset
@@ -304,7 +307,6 @@ class CctalkDevice : public QObject {
 
 
 
-}
 
 
 #endif
