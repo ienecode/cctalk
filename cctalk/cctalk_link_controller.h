@@ -13,7 +13,7 @@ License: BSD-3-Clause
 #include "cctalk_enums.h"
 
 
-namespace qtcc {
+
 
 
 
@@ -139,8 +139,8 @@ class CctalkLinkController : public QObject {
 
 	private:
 
-		QScopedPointer<SerialWorker> serial_worker_;  ///< Serial port worker, lives in worker_thread_.
-		QThread worker_thread_;  ///< The thread that SerialWorker lives in
+        QScopedPointer<SerialWorker> serial_worker_;  ///< Serial port worker, lives in worker_thread_.
+        QThread worker_thread_;  ///< The thread that SerialWorker lives in
 
 		QString port_device_;  ///< Serial port device, e.g. /dev/ttyUSB0
 		quint8 device_addr_ = 0x00;  ///< ccTalk destination address, used to differentiate different devices on the same serial bus. 0 for all.
@@ -157,7 +157,7 @@ class CctalkLinkController : public QObject {
 
 
 
-}
+
 
 
 #endif
