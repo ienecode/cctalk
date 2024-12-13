@@ -14,7 +14,6 @@ License: BSD-3-Clause
 #include <QThread>
 
 
-namespace qtcc {
 
 
 
@@ -25,7 +24,8 @@ class SerialWorker : public QObject {
 	public:
 
 		/// Constructor
-		SerialWorker();
+        //SerialWorker();
+        explicit SerialWorker(QObject *parent = nullptr);
 
 		/// Set logging options for logMessage() signal.
 		void setLoggingOptions(bool show_full_response, bool show_serial_request, bool show_serial_response);
@@ -81,7 +81,8 @@ class SerialWorker : public QObject {
 
 	private:
 
-		QScopedPointer<QSerialPort> serial_port_;  ///< Serial port
+        //QScopedPointer<QSerialPort> serial_port_;  ///< Serial port
+        QSerialPort * const serial_port_;
 
 		/// If true, the response from serial port comes with request prepended to it (e.g. cctalk), remove it.
 		/// This is due to bi-directional nature of the data line.
@@ -96,7 +97,6 @@ class SerialWorker : public QObject {
 };
 
 
-}
 
 
 
