@@ -6,36 +6,23 @@ License: BSD-3-Clause
 #include "serial_worker.h"
 
 
-namespace qtcc {
-
-
-
-SerialWorker::SerialWorker()
+SerialWorker::SerialWorker(QObject*parent) : QObject(parent), serial_port_{new QSerialPort(this)}
 {
-    qDebug() << "ThreadID SerialWorker:  " << QThread::currentThreadId();
-
 	connect(this, &SerialWorker::portError, [this](const QString& error_msg) {
 		emit logMessage(tr("! Serial port %1 error: %2").arg(serial_port_ ? serial_port_->portName() : tr("[unknown]")).arg(error_msg));
 	});
-
-
 }
-
-
-
 void SerialWorker::setLoggingOptions(bool show_full_response, bool show_serial_request, bool show_serial_response)
 {
 	show_full_response_ = show_full_response;
 	show_serial_request_ = show_serial_request;
 	show_serial_response_ = show_serial_response;
 }
-
-
-
 void SerialWorker::openPort(const QString& port_name)
 {
-	if (!serial_port_) {
-		serial_port_.reset(new QSerialPort());
+    if (!serial_port_) {
+        //serial_port_.reset(new QSerialPort());
+        serial_port_->deleteLater();
 	}
 
 	if (serial_port_->isOpen()) {
@@ -93,8 +80,6 @@ void SerialWorker::closePort()
 		serial_port_->close();
 	}
 }
-
-
 
 void SerialWorker::sendRequest(quint64 request_id, const QByteArray& request_data,
 		bool request_needs_response, int write_timeout_msec, int response_timeout_msec)
@@ -155,5 +140,5 @@ void SerialWorker::sendRequest(quint64 request_id, const QByteArray& request_dat
 
 
 
-}
+
 
