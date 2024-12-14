@@ -1,7 +1,3 @@
-/**************************************************************************
-Copyright: (C) 2015 - 2021 Alexander Shaduri
-License: BSD-3-Clause
-***************************************************************************/
 
 #ifndef BILL_VALIDATOR_DEVICE_H
 #define BILL_VALIDATOR_DEVICE_H

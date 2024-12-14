@@ -1,7 +1,3 @@
-/**************************************************************************
-Copyright: (C) 2014 - 2021 Alexander Shaduri
-License: BSD-3-Clause
-***************************************************************************/
 
 #ifndef CCTALK_LINK_CONTROLLER_H
 #define CCTALK_LINK_CONTROLLER_H
