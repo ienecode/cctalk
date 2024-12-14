@@ -14,8 +14,6 @@ License: BSD-3-Clause
 #include "helpers/debug.h"
 
 
-namespace qtcc {
-
 
 /// ccTalk header bytes. Note: Core commands are mandatory, Core plus are optional
 /// (except when required for a certain type of device).
@@ -1130,7 +1128,7 @@ struct CcIdentifier {
 
 
 
-}
+
 
 
 

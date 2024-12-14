@@ -9,7 +9,7 @@ License: BSD-3-Clause
 #include "cctalk_device.h"
 
 
-namespace qtcc {
+
 
 
 /// Bill validator controller
@@ -17,7 +17,6 @@ class BillValidatorDevice : public CctalkDevice { };
 
 
 
-}
 
 
 #endif

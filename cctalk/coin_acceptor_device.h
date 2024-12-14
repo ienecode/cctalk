@@ -9,14 +9,13 @@ License: BSD-3-Clause
 #include "cctalk_device.h"
 
 
-namespace qtcc {
 
 
 /// Coin acceptor controller
 class CoinAcceptorDevice : public CctalkDevice { };
 
 
-}
+
 
 
 #endif
