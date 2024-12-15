@@ -6,29 +6,29 @@ License: BSD-3-Clause
 #include <memory>
 #include "cctalk_link_controller.h"
 #include "helpers/debug.h"
-#include "serial_worker.h"
+
 
 CctalkLinkController::CctalkLinkController()
 {
-    serial_worker_.reset(new SerialWorker());
-
+    serial_worker_ = new SerialWorker();
     serial_worker_->moveToThread(&worker_thread_);
-	connect(&worker_thread_, &QThread::finished, serial_worker_.data(), &QObject::deleteLater);
+
+    connect(&worker_thread_, &QThread::finished, serial_worker_, &QObject::deleteLater);
 
 	// Connect our proxy signals to their slots.
-	connect(this, &CctalkLinkController::openPortInWorker, serial_worker_.data(), &SerialWorker::openPort, Qt::QueuedConnection);
-	connect(this, &CctalkLinkController::closePortInWorker, serial_worker_.data(), &SerialWorker::closePort, Qt::QueuedConnection);
-	connect(this, &CctalkLinkController::sendRequestToWorker, serial_worker_.data(), &SerialWorker::sendRequest, Qt::QueuedConnection);
+    connect(this, &CctalkLinkController::openPortInWorker, serial_worker_, &SerialWorker::openPort, Qt::QueuedConnection);
+    connect(this, &CctalkLinkController::closePortInWorker, serial_worker_, &SerialWorker::closePort, Qt::QueuedConnection);
+    connect(this, &CctalkLinkController::sendRequestToWorker, serial_worker_, &SerialWorker::sendRequest, Qt::QueuedConnection);
 
 	// Handle their signals
-	connect(serial_worker_.data(), &SerialWorker::responseReceived, this, &CctalkLinkController::onResponseReceive, Qt::QueuedConnection);
+    connect(serial_worker_, &SerialWorker::responseReceived, this, &CctalkLinkController::onResponseReceive, Qt::QueuedConnection);
 
 	// Mirror some signals
-	connect(serial_worker_.data(), &SerialWorker::portError, this, &CctalkLinkController::portError, Qt::QueuedConnection);
-	connect(serial_worker_.data(), &SerialWorker::portOpen, this, &CctalkLinkController::portOpen, Qt::QueuedConnection);
-// 	connect(serial_worker_.data(), &SerialWorker::requestTimeout, this, &CctalkLinkController::requestTimeout, Qt::QueuedConnection);
-// 	connect(serial_worker_.data(), &SerialWorker::responseTimeout, this, &CctalkLinkController::responseTimeout, Qt::QueuedConnection);
-	connect(serial_worker_.data(), &SerialWorker::logMessage, this, &CctalkLinkController::logMessage, Qt::QueuedConnection);
+    connect(serial_worker_, &SerialWorker::portError, this, &CctalkLinkController::portError, Qt::QueuedConnection);
+    connect(serial_worker_, &SerialWorker::portOpen, this, &CctalkLinkController::portOpen, Qt::QueuedConnection);
+// 	connect(serial_worker_., &SerialWorker::requestTimeout, this, &CctalkLinkController::requestTimeout, Qt::QueuedConnection);
+// 	connect(serial_worker_., &SerialWorker::responseTimeout, this, &CctalkLinkController::responseTimeout, Qt::QueuedConnection);
+    connect(serial_worker_, &SerialWorker::logMessage, this, &CctalkLinkController::logMessage, Qt::QueuedConnection);
 
 	// Log message structure errors
 	connect(this, &CctalkLinkController::ccResponseMessageStructureError, [this]([[maybe_unused]] quint64 request_id,
@@ -38,20 +38,19 @@ CctalkLinkController::CctalkLinkController()
 
 
 	// requestFinishedOrError signal, which signals the executeOnReturn() function to call its callback.
-
 	connect(this, &CctalkLinkController::ccResponseReply, [this](quint64 request_id, const QByteArray& command_data) {
 		emit requestFinishedOrError(request_id, QString(), command_data);
 	});
 
-	connect(serial_worker_.data(), &SerialWorker::portError, [this](const QString& error_msg) {
+    connect(serial_worker_, &SerialWorker::portError, [this](const QString& error_msg) {
 		emit requestFinishedOrError(0, error_msg, QByteArray());
 	});
 
-	connect(serial_worker_.data(), &SerialWorker::requestTimeout, [this](quint64 request_id) {
+    connect(serial_worker_, &SerialWorker::requestTimeout, [this](quint64 request_id) {
 		emit requestFinishedOrError(request_id, QObject::tr("Request #%1 write timeout").arg(request_id), QByteArray());
 	});
 
-	connect(serial_worker_.data(), &SerialWorker::responseTimeout, [this](quint64 request_id) {
+    connect(serial_worker_, &SerialWorker::responseTimeout, [this](quint64 request_id) {
 		emit requestFinishedOrError(request_id, QObject::tr("Response #%1 read timeout").arg(request_id), QByteArray());
 	});
 
@@ -96,10 +95,10 @@ void CctalkLinkController::setLoggingOptions(bool show_full_response, bool show_
 void CctalkLinkController::openPort(const std::function<void(const QString& error_msg)>& finish_callback)
 {
 	emit openPortInWorker(port_device_);  // Queued
-	connect(serial_worker_.data(), &SerialWorker::portError, [=](const QString& error_msg) {
+    connect(serial_worker_, &SerialWorker::portError, [=](const QString& error_msg) {
 		finish_callback(error_msg);
 	});
-	connect(serial_worker_.data(), &SerialWorker::portOpen, [=]() {
+    connect(serial_worker_, &SerialWorker::portOpen, [=]() {
 		finish_callback(QString());
 	});
 }

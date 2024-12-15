@@ -14,9 +14,6 @@
 
 
 
-
-
-
 /// Device state.
 /// Additional commands that may change the state:
 /// - ResetDevice

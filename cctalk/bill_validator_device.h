@@ -5,14 +5,8 @@
 #include "cctalk_device.h"
 
 
-
-
-
 /// Bill validator controller
 class BillValidatorDevice : public CctalkDevice { };
-
-
-
 
 
 #endif

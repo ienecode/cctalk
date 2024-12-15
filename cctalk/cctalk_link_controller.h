@@ -5,20 +5,11 @@
 #include <QThread>
 #include <functional>
 #include <QDebug>
-
 #include "cctalk_enums.h"
+#include "serial_worker.h"
 
 
-
-
-
-
-class SerialWorker;
-
-
-/**
-\file
-
+/*
 How it all works:
 
 SerialWorker runs in its own thread (launched by CctalkLinkController) and
@@ -126,35 +117,24 @@ class CctalkLinkController : public QObject {
 		void executeOnReturn(quint64 sent_request_id,
 				const std::function<void(quint64 request_id, const QString& error_msg, const QByteArray& command_data)>& callback) const;
 
-
 	protected slots:
-
 		/// Handle generic serial response and emit ccResponse
 		void onResponseReceive(quint64 request_id, const QByteArray& response_data);
 
 
 	private:
-
-        QScopedPointer<SerialWorker> serial_worker_;  ///< Serial port worker, lives in worker_thread_.
+        SerialWorker *serial_worker_;
         QThread worker_thread_;  ///< The thread that SerialWorker lives in
-
 		QString port_device_;  ///< Serial port device, e.g. /dev/ttyUSB0
 		quint8 device_addr_ = 0x00;  ///< ccTalk destination address, used to differentiate different devices on the same serial bus. 0 for all.
 		quint8 controller_addr_ = 0x01;  ///< Controller address. 1 means "Master". There is no reason to change this.
 		bool checksum_16bit_ = false;  /// If true, use 16-bit CRC checksum. Otherwise use simple 8-bit checksum. The device must be set to the same value.
 		bool des_encrypted_ = false;  ///< If true, use DES encryption. The device must be set to the same value. NOTE: Unsupported.
-
 		quint64 req_num_ = 0;  ///< Request number. This is used to identify which response came from which request.
-
 		bool show_cctalk_request_ = true;
 		bool show_cctalk_response_ = true;
 
 };
-
-
-
-
-
 
 #endif
 

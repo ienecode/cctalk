@@ -5,13 +5,8 @@
 #include "cctalk_device.h"
 
 
-
-
 /// Coin acceptor controller
 class CoinAcceptorDevice : public CctalkDevice { };
-
-
-
 
 
 #endif

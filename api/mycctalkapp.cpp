@@ -83,9 +83,7 @@ void MyCcTalkApp::onStartStopCoinAcceptor()
             coin_acceptor_.getLinkController().closePort();
         });
     }
-
 }
-
 void MyCcTalkApp::onToggleCoinAccept()
 {
     bool accepting = coin_acceptor_.getDeviceState() == CcDeviceState::NormalAccepting;

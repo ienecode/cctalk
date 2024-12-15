@@ -15,7 +15,6 @@ namespace {
 
 }
 
-
 bool AppSettings::init()
 {
     // Load the system settings from the current directory

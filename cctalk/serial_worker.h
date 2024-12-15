@@ -10,9 +10,6 @@
 #include <QThread>
 
 
-
-
-
 /// Serial port communication handler.
 /// Note that except construction, all of the code is executed in the worker thread.
 class SerialWorker : public QObject {

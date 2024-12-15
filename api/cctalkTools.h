@@ -14,7 +14,6 @@
 
 
 
-
 /// Set up cctalk devices - coin acceptor and bill validator. This
 /// reads the config file to get the device settings.
 /// \return Error string or empty string if no error.
