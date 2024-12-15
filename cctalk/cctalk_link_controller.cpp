@@ -8,9 +8,9 @@ License: BSD-3-Clause
 #include "helpers/debug.h"
 
 
-CctalkLinkController::CctalkLinkController()
+CctalkLinkController::CctalkLinkController(QObject *parent) : QObject(parent), serial_worker_{new SerialWorker(this)}
 {
-    serial_worker_ = new SerialWorker();
+
     serial_worker_->moveToThread(&worker_thread_);
 
     connect(&worker_thread_, &QThread::finished, serial_worker_, &QObject::deleteLater);

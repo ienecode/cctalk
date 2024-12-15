@@ -6,7 +6,7 @@ License: BSD-3-Clause
 #include "serial_worker.h"
 
 
-SerialWorker::SerialWorker(QObject*parent) : QObject(parent), serial_port_{new QSerialPort(this)}
+SerialWorker::SerialWorker(QObject *parent) : QObject(parent), serial_port_{new QSerialPort(this)}
 {
 	connect(this, &SerialWorker::portError, [this](const QString& error_msg) {
 		emit logMessage(tr("! Serial port %1 error: %2").arg(serial_port_ ? serial_port_->portName() : tr("[unknown]")).arg(error_msg));
@@ -21,8 +21,8 @@ void SerialWorker::setLoggingOptions(bool show_full_response, bool show_serial_r
 void SerialWorker::openPort(const QString& port_name)
 {
     if (!serial_port_) {
-        //serial_port_.reset(new QSerialPort());
-        serial_port_->deleteLater();
+        emit logMessage(tr("* Error serial_port_ object "));
+        return;
 	}
 
 	if (serial_port_->isOpen()) {
@@ -93,10 +93,10 @@ void SerialWorker::sendRequest(quint64 request_id, const QByteArray& request_dat
 
 	// NOTE Retrying is implemented on ccTalk level, no need to do it here.
 
-// 	int left_retries = request_max_retries_;
+   // int left_retries = request_max_retries_;  //to comment 1
 
 	// Write request
-// 	while (left_retries--) {
+   // while (left_retries--) {  ///to comment 2
 		serial_port_->write(request_data);
 
 		if (serial_port_->waitForBytesWritten(write_timeout_msec)) {
@@ -121,9 +121,9 @@ void SerialWorker::sendRequest(quint64 request_id, const QByteArray& request_dat
 					emit responseReceived(request_id, response_data);
 					return;  // all done
 
-// 				} else if (left_retries > 0) {
-// 					emit logMessage(QObject::tr("> Retrying request #%1 (try #%2)").arg(request_id).arg(request_max_retries_ - left_retries));
-// 					emit requestRetry(request_id);
+              //  } else if (left_retries > 0) { //to comment 3 , 4, 5
+             //       emit logMessage(QObject::tr("> Retrying request #%1 (try #%2)").arg(request_id).arg(request_max_retries_ - left_retries));
+             //       emit requestRetry(request_id);
 				} else {
 					emit logMessage(QObject::tr("!< Response #%1 read timeout (%2ms)").arg(request_id).arg(response_timeout_msec));
 					emit responseTimeout(request_id);
@@ -135,7 +135,7 @@ void SerialWorker::sendRequest(quint64 request_id, const QByteArray& request_dat
 			emit logMessage(QObject::tr("!> Request #%1 write timeout (%2ms)").arg(request_id).arg(write_timeout_msec));
 			emit requestTimeout(request_id);
 		}
-// 	}
+   // }  // to comment 6
 }
 
 

@@ -16,7 +16,6 @@ class SerialWorker : public QObject {
 	Q_OBJECT
 	public:
 
-		/// Constructor
         //SerialWorker();
         explicit SerialWorker(QObject *parent = nullptr);
 
@@ -62,9 +61,9 @@ class SerialWorker : public QObject {
 		/// Emitted on response final timeout (after request retries)
 		void responseTimeout(quint64 request_id);
 
-
+        //to comment 8
 		/// Emitted each time the request is retried
-// 		void requestRetry(quint64 request_id);
+        //void requestRetry(quint64 request_id);
 
 
 		/// This can be used to log requests and responses.
@@ -85,7 +84,8 @@ class SerialWorker : public QObject {
 		bool show_serial_request_ = false;
 		bool show_serial_response_ = false;
 
-// 		int request_max_retries_ = 3;  ///< If, while waiting for response, timeout was reached, re-send the request.
+           //to comment 7
+        //int request_max_retries_ = 3;  ///< If, while waiting for response, timeout was reached, re-send the request.
 
 };
 

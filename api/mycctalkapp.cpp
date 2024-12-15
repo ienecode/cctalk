@@ -21,7 +21,7 @@ MyCcTalkApp::MyCcTalkApp(QObject *parent)
     QTimer::singleShot(0, this, SLOT(runSerialThreads()));
 
     QTimer::singleShot(10000, this, &MyCcTalkApp::onStartStopCoinAcceptor);
-    // QTimer::singleShot(20000, this, &MyCcTalkApp::onToggleCoinAccept);
+    QTimer::singleShot(20000, this, &MyCcTalkApp::onToggleCoinAccept);
 
 }
 

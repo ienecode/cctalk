@@ -10,11 +10,8 @@
 
 
 namespace {
-
     QSettings* s_app_settings = nullptr;
-
 }
-
 bool AppSettings::init()
 {
     // Load the system settings from the current directory

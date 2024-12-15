@@ -124,14 +124,6 @@ class CctalkDevice : public QObject {
 		bool shutdown(const std::function<void(const QString& error_msg)>& finish_callback);
 
 
-	protected:
-
-		/// Start event-handling timer
-        //void startTimer();
-
-		/// Stop event-handling timer
-        //void stopTimer();
-
 	signals:
 
 		/// Emitted whenever device state is changed.
@@ -271,7 +263,7 @@ class CctalkDevice : public QObject {
 
 		CctalkLinkController link_controller_;  ///< Controller for serial worker thread with cctalk link management support.
 
-        int normal_polling_interval_msec_ = 100;  ///< Polling interval for normal and diagnostics modes.
+        int normal_polling_interval_msec_ = 500;  ///< Polling interval for normal and diagnostics modes.
 		const int default_normal_polling_interval_msec_ = 100;  ///< Default polling interval for normal and diagnostics modes.
 		const int not_alive_polling_interval_msec_ = 1000;  ///< Polling interval for modes when the device doesn't respond to alive check.
 

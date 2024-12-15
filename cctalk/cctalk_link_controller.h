@@ -37,7 +37,7 @@ class CctalkLinkController : public QObject {
 
 
 		/// Constructor
-		CctalkLinkController();
+        explicit CctalkLinkController(QObject *parent = nullptr);
 
 		/// Destructor
 		~CctalkLinkController() override;
