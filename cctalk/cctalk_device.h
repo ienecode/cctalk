@@ -100,7 +100,7 @@ class CctalkDevice : public QObject {
 	Q_OBJECT
 	public:
 
-        //using BillValidatorFunc = std::function<bool(quint8 bill_id, const CcIdentifier& identifier)>;
+        using BillValidatorFunc = std::function<bool(quint8 bill_id, const CcIdentifier& identifier)>;
 
 		/// Constructor
 		CctalkDevice();
@@ -111,7 +111,7 @@ class CctalkDevice : public QObject {
 		/// This function is called in NormalAccepting state when a bill is inserted and
 		/// should be checked for validity by us.
 		/// If the function returns true, the bill is accepted.
-        //void setBillValidationFunction(BillValidatorFunc validator);
+        void setBillValidationFunction(BillValidatorFunc validator);
 
 		/// Request initializing the device from ShutDown state.
 		/// Starts event timer.
@@ -225,6 +225,10 @@ class CctalkDevice : public QObject {
 		/// when polling in diagnostics mode.
 		void requestSelfCheck(const std::function<void(const QString& error_msg, CcFaultCode fault_code)>& finish_callback);
 
+        //Hopper
+        void requestPayoutHiLoLevel(const std::function<void(const QString& error_msg, CcFaultCode fault_code, quint8 level_byte)>& finish_callback);
+
+
 		/// Request soft reset. Finish callback is called when the device accepts the reset command.
 		void requestResetDevice(const std::function<void(const QString& error_msg)>& finish_callback);
 
@@ -264,7 +268,7 @@ class CctalkDevice : public QObject {
 		CctalkLinkController link_controller_;  ///< Controller for serial worker thread with cctalk link management support.
 
         int normal_polling_interval_msec_ = 500;  ///< Polling interval for normal and diagnostics modes.
-		const int default_normal_polling_interval_msec_ = 100;  ///< Default polling interval for normal and diagnostics modes.
+        const int default_normal_polling_interval_msec_ = 500;  ///< Default polling interval for normal and diagnostics modes.
 		const int not_alive_polling_interval_msec_ = 1000;  ///< Polling interval for modes when the device doesn't respond to alive check.
 
         QTimer event_timer_;  ///< Polling timer
@@ -273,7 +277,7 @@ class CctalkDevice : public QObject {
 
 		CcDeviceState device_state_ = CcDeviceState::ShutDown;  ///< Current status
 
-        //BillValidatorFunc bill_validator_func_;  ///< Bill validator function, which tells us to accept or reject a certain bill.
+        BillValidatorFunc bill_validator_func_;  ///< Bill validator function, which tells us to accept or reject a certain bill.
 
 // 		QTimer reset_timer_;  ///< Timer that waits for the device to get back up after SoftReset
 // 		QTime last_reset_time_;  ///< Last time the device was SoftReset

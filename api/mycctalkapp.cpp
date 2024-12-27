@@ -20,15 +20,20 @@ MyCcTalkApp::MyCcTalkApp(QObject *parent)
 
     QTimer::singleShot(0, this, SLOT(runSerialThreads()));
 
-    QTimer::singleShot(10000, this, &MyCcTalkApp::onStartStopCoinAcceptor);
-    QTimer::singleShot(20000, this, &MyCcTalkApp::onToggleCoinAccept);
+
+
+
+    //QTimer::singleShot(10000, this, &MyCcTalkApp::onStartStopCoinAcceptor);
+    //QTimer::singleShot(20000, this, &MyCcTalkApp::onToggleCoinAccept);
+
+     QTimer::singleShot(10000, this, &MyCcTalkApp::onStartStopHopper);
 
 }
 
 void MyCcTalkApp::runSerialThreads()
 {
     // Set cctalk options
-    QString setup_error = setUpCctalkDevices(&coin_acceptor_, [=](QString message) {
+    QString setup_error = setUpCctalkDevices(&coin_acceptor_, &hopper_a, [=](QString message) {
         logMessage(message);
     });
     if (!setup_error.isEmpty()) {
@@ -39,12 +44,18 @@ void MyCcTalkApp::runSerialThreads()
     {
         connect(&coin_acceptor_, &CctalkDevice::creditAccepted, [this]([[maybe_unused]] quint8 id, const CcIdentifier& identifier) {
             const char* prop_name = "integral_value";
-            quint64 divisor = 1;
+            quint64 divisor = 0;
             quint64 value = identifier.getValue(divisor);
 
             qDebug() << "CreditAccepted: " << value;
 
         });
+    }
+
+    // Hopper
+    {
+
+
     }
 
 
@@ -64,6 +75,7 @@ void MyCcTalkApp::logMessage(QString msg)
 
 void MyCcTalkApp::onStartStopCoinAcceptor()
 {
+    qDebug() << "----------------------------------Strat Coin Acceptor--------------------------------------";
 
     if (coin_acceptor_.getDeviceState() == CcDeviceState::ShutDown) {
 
@@ -86,6 +98,8 @@ void MyCcTalkApp::onStartStopCoinAcceptor()
 }
 void MyCcTalkApp::onToggleCoinAccept()
 {
+    qDebug() << "----------------------------------Strat Coin Acceptor Accept Coin--------------------------------------";
+
     bool accepting = coin_acceptor_.getDeviceState() == CcDeviceState::NormalAccepting;
     bool rejecting = coin_acceptor_.getDeviceState() == CcDeviceState::NormalRejecting;
     if (accepting || rejecting) {
@@ -96,6 +110,28 @@ void MyCcTalkApp::onToggleCoinAccept()
     } else {
         logMessage(tr("! Cannot toggle coin accept mode, the device is in %1 state.")
                    .arg(ccDeviceStateGetDisplayableName(coin_acceptor_.getDeviceState())));
+    }
+}
+
+void MyCcTalkApp::onStartStopHopper()
+{
+    qDebug() << "----------------------------------Start Hopper--------------------------------------";
+
+    if (hopper_a.getDeviceState() == CcDeviceState::ShutDown) {
+
+        hopper_a.getLinkController().openPort([this](const QString& error_msg) {
+
+            if (error_msg.isEmpty()) {
+                hopper_a.initialize([]([[maybe_unused]] const QString& init_error_msg) { });
+            }
+        });
+    }
+    else
+    {
+        hopper_a.shutdown([this]([[maybe_unused]] const QString& error_msg) {
+            // Close the port once the device is "shut down"
+            hopper_a.getLinkController().closePort();
+        });
     }
 
 }

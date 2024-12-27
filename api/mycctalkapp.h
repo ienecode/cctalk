@@ -4,6 +4,10 @@
 #include <QScopedPointer>
 #include <QDebug>
 #include "cctalk/coin_acceptor_device.h"
+#include "cctalk/hopper_device.h"
+
+
+
 
 
 class MyCcTalkApp: public QObject
@@ -27,10 +31,16 @@ public slots:
     void onToggleCoinAccept();
 
 
+    /// Button click callback
+    void onStartStopHopper();
+
+
 
 private:
 
     CoinAcceptorDevice coin_acceptor_;  ///< Coin acceptor communicator
+    HopperDevice hopper_a;
+
 
 };
 

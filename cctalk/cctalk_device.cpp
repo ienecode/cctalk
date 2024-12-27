@@ -37,10 +37,10 @@ CctalkLinkController& CctalkDevice::getLinkController()
     return link_controller_;
 }
 
-//void CctalkDevice::setBillValidationFunction(BillValidatorFunc validator)
-//{
-//	bill_validator_func_ = std::move(validator);
-//}
+void CctalkDevice::setBillValidationFunction(BillValidatorFunc validator)
+{
+    bill_validator_func_ = std::move(validator);
+}
 
 bool CctalkDevice::initialize(const std::function<void(const QString& error_msg)>& finish_callback)
 {
@@ -64,10 +64,13 @@ bool CctalkDevice::shutdown(const std::function<void(const QString& error_msg)>&
 void CctalkDevice::startTimer()
 {
     //
+    /*
     if (QThread::currentThread() != thread() ) {
         metaObject()->invokeMethod(this, "startTimer", Qt::QueuedConnection);
         return;
     }
+
+    */
     emit logMessage(tr("Starting poll timer."));
     event_timer_.start();
 
@@ -75,15 +78,16 @@ void CctalkDevice::startTimer()
     QTimer::singleShot(0, this, SLOT(timerIteration()));
 }
 
-
-
 void CctalkDevice::stopTimer()
 {
     //
+
+    /*
     if (QThread::currentThread() != thread() ) {
         metaObject()->invokeMethod(this, "stopTimer", Qt::QueuedConnection);
         return;
     }
+    */
     emit logMessage(tr("Stopping poll timer."));
     event_timer_.stop();
 }
@@ -93,7 +97,7 @@ void CctalkDevice::timerIteration()
     if (timer_iteration_task_running_) {
         return;
     }
-    emit logMessage(tr("Polling......"));
+    //emit logMessage(tr("Polling......"));
 
     // This is set to false in finish callbacks.
     timer_iteration_task_running_ = true;
@@ -123,7 +127,14 @@ void CctalkDevice::timerIteration()
 
     // The device has been initialized, resume normal rejecting or diagnostics polling.
     // Default to bill / coin rejection.
+
+
     if (getDeviceState() == CcDeviceState::Initialized) {
+
+
+
+        if (device_category_ != CcCategory::Payout ) {
+
         // Perform a self-check and see if everything's ok.
         requestSelfCheck([=]([[maybe_unused]] const QString& error_msg, CcFaultCode fault_code) {
             if (fault_code == CcFaultCode::Ok) {
@@ -138,8 +149,27 @@ void CctalkDevice::timerIteration()
                 });
             }
         });
+
+        }else{
+
+            requestPayoutHiLoLevel([=]([[maybe_unused]] const QString& error_msg, CcFaultCode fault_code,quint8 level_byte) {
+                if (true) {
+                    // Check te level in hopper
+                    timer_iteration_task_running_ = false;
+                } else {  // the fault is still there
+                    timer_iteration_task_running_ = false;
+                }
+            });
+            return;
+
+        }
+
+
+
+
         return;
     }
+
 
     // The device initialization failed, something wrong with it. Abort.
     if (getDeviceState() == CcDeviceState::InitializationFailed) {
@@ -912,11 +942,11 @@ void CctalkDevice::requestIdentifiers(const std::function<void(const QString& er
                 return;  // already present
             }
 
-            // Predefined rules for Georgia. TODO Make this configurable and / or remove it from here.
+            // Predefined rules for Poland. TODO Make this configurable and / or remove it from here.
             if (device_category_ == CcCategory::CoinAcceptor && country == "PL") {
                 CcCountryScalingData data;
                 data.scaling_factor = 1;
-                data.decimal_places = 2;
+                data.decimal_places = 1;
                 shared_country_scaling_data->insert(country, data);
                 (*shared_identifiers)[pos].setCountryScalingData(data);
                 emit logMessage(tr("* Using predefined country scaling data for %1: scaling factor: %2, decimal places: %3.")
@@ -1267,7 +1297,7 @@ void CctalkDevice::processCreditEventLog(bool accepting, const QString& event_lo
     }
 
     // Decide what to do with the bill currently in escrow
-    /*
+
     if (bill_routing_pending) {
         aser->add([=]([[maybe_unused]] AsyncSerializer* serializer) {
             bool accept = false;
@@ -1301,7 +1331,7 @@ void CctalkDevice::processCreditEventLog(bool accepting, const QString& event_lo
             });
         });
     }
-*/
+
     // If the fault code was not Ok, switch to diagnostics mode.
     if (self_check_requested) {
         aser->add([=]([[maybe_unused]] AsyncSerializer* serializer) {
@@ -1363,7 +1393,7 @@ void CctalkDevice::requestSelfCheck(const std::function<void(const QString& erro
             finish_callback(error_msg, CcFaultCode::CustomCommandError);
             return;
         }
-        if (command_data.size() != 1) {
+        if (!(command_data.size() == 2) || (command_data.size() == 1)) {  // Perform self-check available in format(a) i format (b)
             QString error = tr("! Invalid data received for PerformSelfCheck.");
             emit ccResponseDataDecodeError(request_id, error);  // auto-logged
             finish_callback(error, CcFaultCode::CustomCommandError);
@@ -1373,6 +1403,24 @@ void CctalkDevice::requestSelfCheck(const std::function<void(const QString& erro
         auto fault_code = static_cast<CcFaultCode>(command_data.at(0));
         emit logMessage(tr("* Self-check fault code: %1").arg(ccFaultCodeGetDisplayableName(fault_code)));
         finish_callback(QString(), fault_code);
+    });
+}
+
+void CctalkDevice::requestPayoutHiLoLevel(const std::function<void (const QString&, CcFaultCode fault_code, quint8 level_byte)>& finish_callback)
+{
+    quint64 sent_request_id = link_controller_.ccRequest(CcHeader::GetHopperLevel, QByteArray());
+    link_controller_.executeOnReturn(sent_request_id, [=](quint64 request_id, const QString& error_msg, const QByteArray& command_data) mutable {
+
+        if (!error_msg.isEmpty()) {
+            emit logMessage(tr("! Error getting Hopper Levels status: %1").arg(error_msg));
+            finish_callback(error_msg, CcFaultCode::CustomCommandError,0);
+            return;
+        }
+
+        // Decode the data
+        auto level_byte = command_data.at(0);
+        emit logMessage(tr("* Hopper Level byte: %1").arg(level_byte));
+        finish_callback(QString(),  CcFaultCode::CustomCommandError, level_byte);
     });
 }
 

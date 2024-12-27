@@ -37,7 +37,15 @@ enum class CcHeader : quint8 {
 	/// Coin acceptor auditing, bill validator auditing: Get number of coins/bills rejected by the device.
 	/// Returns [byte1][byte2][byte3]. counter = [byte1] + 256*[byte2] + 65536*[byte3]. Range 0 to 16,777,215.
 	GetRejectCounter = 194,
-	/// Coin acceptor auditing, bill validator auditing: Get number of coins/bills accepted by the device.
+
+
+
+    //Request Payout high/low status (header 217)
+    //bit 0 - Low Level status (1 = low level)
+    //bit 1 - High Level status (1 = high level)
+    GetHopperLevel = 217,
+
+    /// Coin acceptor auditing, bill validator auditing: Get number of coins/bills accepted by the device.
 	/// Returns [byte1][byte2][byte3]. counter = [byte1] + 256*[byte2] + 65536*[byte3]. Range 0 to 16,777,215.
 	GetAcceptCounter = 225,
 	/// Coin acceptor auditing, bill validator auditing: Get number of coins/bills put through the device.
@@ -1056,10 +1064,10 @@ struct CcCountryScalingData {
 	/// Scaling factor from country scaling data.
 	/// The bill identifier values should be
 	/// multiplied by this to get cents.
-	quint16 scaling_factor = 1;
+    quint16 scaling_factor = 1;
 
 	/// Decimal places from country scaling data. 2 for USD (10^2 cents in USD)
-	quint8 decimal_places = 0;
+    quint8 decimal_places = 0;
 
 	/// If country code is unsupported, this returns false.
 	[[nodiscard]] bool isValid() const
@@ -1113,7 +1121,7 @@ struct CcIdentifier {
 
 
 	QByteArray id_string;  ///< Bill / coin identifier, e.g. "GE0005A" for the first ("A") issue of Georgian 5 lari (value code 0005).
-	QByteArray country;  ///< Country identifier, e.g. "GE".
+    QByteArray country;  ///< Country identifier, e.g. "PL".
 	char issue_code = 0;  ///< Issue code (A, B, C, ...), to differentiate various issues of the same-value coin.
 	quint64 value_code = 0;  ///< Value code (before country scaling, if it's a bill).
 	quint8 coin_decimals = 0;  ///< Value code should be divided by 10^coin_decimals to get the real value.

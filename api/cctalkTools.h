@@ -10,6 +10,7 @@
 
 #include "cctalk/bill_validator_device.h"
 #include "cctalk/coin_acceptor_device.h"
+#include "cctalk/hopper_device.h"
 #include "appsettings.h"
 
 
@@ -17,7 +18,7 @@
 /// Set up cctalk devices - coin acceptor and bill validator. This
 /// reads the config file to get the device settings.
 /// \return Error string or empty string if no error.
-inline QString setUpCctalkDevices(CoinAcceptorDevice* coin_acceptor,
+inline QString setUpCctalkDevices(CoinAcceptorDevice* coin_acceptor, HopperDevice* hopper_a,
         const std::function<void(QString message)>& message_logger)
 {
     // Note: If using multiple devices, all ccTalk options must be the same if the
@@ -29,6 +30,14 @@ inline QString setUpCctalkDevices(CoinAcceptorDevice* coin_acceptor,
             ccCategoryGetDefaultAddress(CcCategory::CoinAcceptor));
     bool coin_des_encrypted = AppSettings::getValue<bool>(QStringLiteral("coin_acceptor/cctalk_des_encrypted"), false);
     bool coin_checksum_16bit = AppSettings::getValue<bool>(QStringLiteral("coin_acceptor/cctalk_checksum_16bit"), false);
+
+
+
+    auto hopper_device = AppSettings::getValue<QString>(QStringLiteral("hopper_a/serial_device_name"));
+    auto hopper_cctalk_address = AppSettings::getValue<quint8>(QStringLiteral("hopper_a/cctalk_address"),
+            ccCategoryGetDefaultAddress(CcCategory::Payout));
+    bool hopper_des_encrypted = AppSettings::getValue<bool>(QStringLiteral("hopper_a/cctalk_des_encrypted"), false);
+    bool hopper_checksum_16bit = AppSettings::getValue<bool>(QStringLiteral("hopper_a/cctalk_checksum_16bit"), false);
 
 
     bool show_full_response = AppSettings::getValue<bool>("cctalk/show_full_response", false);
@@ -50,6 +59,19 @@ inline QString setUpCctalkDevices(CoinAcceptorDevice* coin_acceptor,
                 show_cctalk_request, show_cctalk_response);
 
         QObject::connect(coin_acceptor, &CctalkDevice::logMessage, message_logger);
+    }
+
+    //Hopper
+    if(hopper_a)
+    {
+        if (hopper_device.isEmpty()) {
+            return QObject::tr("! Coin acceptor configured device name is empty, cannot continue.");
+        }
+        message_logger(QObject::tr("* Hopper configured device: %1").arg(hopper_device));
+        hopper_a->getLinkController().setCcTalkOptions(hopper_device, hopper_cctalk_address, hopper_checksum_16bit, hopper_des_encrypted);
+        hopper_a->getLinkController().setLoggingOptions(show_full_response, show_serial_request, show_serial_response,
+                show_cctalk_request, show_cctalk_response);
+        QObject::connect(hopper_a, &CctalkDevice::logMessage, message_logger);
     }
 
     return QString();
